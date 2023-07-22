@@ -1,7 +1,7 @@
 import express from "express";
 import "express-async-errors";
 
-const tweets = [
+let tweets = [
   {
     id: "1",
     text: "드림코더 화이팅",
@@ -45,6 +45,19 @@ router.get("/:id", (req, res, next) => {
 });
 
 // POST /tweets
+router.post("/", (req, res, next) => {
+  const { text, name, username } = req.body;
+  const tweet = {
+    id: Date.now().toString(),
+    text,
+    createdAt: new Date(),
+    name,
+    username,
+  };
+  tweets = [tweet, ...tweets];
+  res.status(201).json(tweet);
+});
+
 // PUT /tweets/:id
 // DELETE /tweets/:id
 export default router;
