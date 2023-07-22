@@ -54,7 +54,7 @@ router.post("/", (req, res, next) => {
     name,
     username,
   };
-  tweets = [tweet, ...tweets];
+  tweets = [tweet, ...tweets]; // 최근에 작성한 트윗이 가장 앞에 오도록
   res.status(201).json(tweet);
 });
 
