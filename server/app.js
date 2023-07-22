@@ -4,6 +4,7 @@ import morgan from "morgan"; // debugging
 import helmet from "helmet"; // 보안
 import "express-async-errors";
 import tweetRouter from "./router/tweets.js";
+import { db } from "./db/database.js";
 const app = express();
 
 app.use(express.json());
@@ -22,4 +23,5 @@ app.use((error, req, res, next) => {
   res.sendStatus(500);
 });
 
+db.getConnection().then((connection) => console.log(connection));
 app.listen(8080);
