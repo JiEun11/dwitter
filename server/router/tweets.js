@@ -34,6 +34,16 @@ router.get("/", (req, res, next) => {
 });
 
 // GET /tweets/:id
+router.get("/:id", (req, res, next) => {
+  const id = req.params.id;
+  const tweet = tweets.find((t) => t.id === id);
+  if (tweet) {
+    res.status(200).json(tweet);
+  } else {
+    res.status(404).json({ message: `Tweet id(${id}) not found!!` });
+  }
+});
+
 // POST /tweets
 // PUT /tweets/:id
 // DELETE /tweets/:id
