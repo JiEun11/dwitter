@@ -1,80 +1,62 @@
 import express from "express";
 import "express-async-errors";
+import { db } from "../db/database.js";
 
-let tweets = [
-  {
-    id: "1",
-    text: "드림코더 화이팅",
-    createdAt: Date.now().toString(),
-    name: "Bella",
-    username: "bella",
-    url: "https://widgetwhats.com/app/uploads/2019/11/free-profile-photo-whatsapp-1.png",
-  },
-  {
-    id: "2",
-    text: "Hi Hi",
-    createdAt: Date.now().toString(),
-    name: "Ellie",
-    username: "ellie",
-  },
-];
+const SELECT_JOIN =
+  "SELECT tw.id, tw.text, tw.createdAt, tw.userId, us.username, us.name, us.url FROM tweets as tw JOIN users us ON tw.userId = us.id";
+const ORDER_DESC = "ORDER BY tw.createdAt DESC";
 
 const router = express.Router();
 
 // GET /tweets
 // GET /tweets?username=:username
-
-router.get("/", (req, res, next) => {
-  // 기본적으로 /tweets으로 연결되어 있으므로 그냥 /만
+router.get("/", async (req, res, next) => {
   const username = req.query.username;
-  const data = username
-    ? tweets.filter((tweet) => tweet.username === username)
-    : tweets;
-  res.status(200).json(data);
+  if (username) {
+    return db
+      .execute(`${SELECT_JOIN} WHERE username=? ${ORDER_DESC}`, [username])
+      .then((result) => res.status(200).json(result[0]));
+  } else {
+    return db
+      .execute(`${SELECT_JOIN} ${ORDER_DESC}`)
+      .then((result) => res.status(200).json(result[0]));
+  }
 });
 
 // GET /tweets/:id
 router.get("/:id", (req, res, next) => {
   const id = req.params.id;
-  const tweet = tweets.find((tweet) => tweet.id === id);
-  if (tweet) {
-    res.status(200).json(tweet);
-  } else {
-    res.status(404).json({ message: `Tweet id(${id}) not found!!` });
-  }
+  return db
+    .execute(`${SELECT_JOIN} WHERE tw.id=?`, [id])
+    .then((result) => res.status(200).json(result[0][0]));
 });
 
 // POST /tweets
 router.post("/", (req, res, next) => {
-  const { text, name, username } = req.body;
-  const tweet = {
-    id: Date.now().toString(),
-    text,
-    createdAt: new Date(),
-    name,
-    username,
-  };
-  tweets = [tweet, ...tweets]; // 최근에 작성한 트윗이 가장 앞에 오도록
-  res.status(201).json(tweet);
+  const { text, name, userId } = req.body;
+  return db
+    .execute("INSERT INTO tweets (text, createdAt, userId) VALUES(?,?,?)", [
+      text,
+      new Date(),
+      userId,
+    ])
+    .then((result) => res.status(201).json(result));
 });
 
 // PUT /tweets/:id
 router.put("/:id", (req, res, next) => {
   const id = req.params.id;
   const text = req.body.text;
-  const tweet = tweets.find((tweet) => tweet.id === id);
-  if (tweet) {
-    tweet.text = text;
-    res.status(200).json(tweet);
-  } else {
-    res.status(404).json({ message: `Tweet id(${id}) not found!!` });
-  }
+  return db
+    .execute("UPDATE tweets SET text=? WHERE id=?", [text, id])
+    .then((result) => res.status(200).json(result));
 });
 
 // DELETE /tweets/:id
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
-  tweets = tweets.filter((tweet) => tweet.id !== id);
-  res.sendStatus(204);
+  return db
+    .execute("DELETE FROM tweets WHERE id=?", [id])
+    .then((result) => res.sendStatus(204));
 });
 export default router;
