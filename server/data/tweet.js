@@ -40,6 +40,7 @@ export function create(text, name, username) {
     username,
   };
   tweets = [tweet, ...tweets];
+  return tweet;
 }
 
 export function update(id, text) {

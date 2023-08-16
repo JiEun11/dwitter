@@ -1,6 +1,6 @@
 import express from "express";
 import "express-async-errors";
-import * as tweetRepository from "../controller/tweet.js";
+import * as tweetRepository from "../data/tweet.js";
 import { db } from "../db/database.js";
 
 const SELECT_JOIN =
@@ -46,6 +46,7 @@ router.get("/:id", (req, res, next) => {
 router.post("/", (req, res, next) => {
   const { text, name, username } = req.body;
   const tweet = tweetRepository.create(text, name, username);
+  res.status(201).json(tweet);
   // return db
   //   .execute("INSERT INTO tweets (text, createdAt, userId) VALUES(?,?,?)", [
   //     text,
