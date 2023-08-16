@@ -14,8 +14,8 @@ const router = express.Router();
 router.get("/", async (req, res, next) => {
   const username = req.query.username;
   const data = username
-    ? tweetRepository.getAllTweetsByUsername(username)
-    : tweetRepository.getAllTweets();
+    ? tweetRepository.getAllByUsername(username)
+    : tweetRepository.getAll();
   res.status(200).json(data);
   // if (username) {
   //   return db
@@ -31,7 +31,7 @@ router.get("/", async (req, res, next) => {
 // GET /tweets/:id
 router.get("/:id", (req, res, next) => {
   const id = req.params.id;
-  const tweet = tweetRepository.getAllTweetsById(id);
+  const tweet = tweetRepository.getAllById(id);
   if (tweet) {
     res.status(200).json(tweet);
   } else {
@@ -45,7 +45,7 @@ router.get("/:id", (req, res, next) => {
 // POST /tweets
 router.post("/", (req, res, next) => {
   const { text, name, username } = req.body;
-  const tweet = tweetRepository.createTweet(text, name, username);
+  const tweet = tweetRepository.create(text, name, username);
   // return db
   //   .execute("INSERT INTO tweets (text, createdAt, userId) VALUES(?,?,?)", [
   //     text,
@@ -59,7 +59,7 @@ router.post("/", (req, res, next) => {
 router.put("/:id", (req, res, next) => {
   const id = req.params.id;
   const text = req.body.text;
-  const tweet = tweetRepository.updateTweet(id, text);
+  const tweet = tweetRepository.update(id, text);
   if (tweet) {
     res.status(200).json(tweet);
   } else {
@@ -73,7 +73,7 @@ router.put("/:id", (req, res, next) => {
 // DELETE /tweets/:id
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
-  tweetRepository.deleteTweet(id);
+  tweetRepository.remove(id);
   res.sendStatus(204);
   // return db
   //   .execute("DELETE FROM tweets WHERE id=?", [id])
