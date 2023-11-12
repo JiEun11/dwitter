@@ -1,10 +1,10 @@
 import * as tweetRepository from "../data/tweet.js";
 
-export function getTweets(req, res, next) {
+export async function getTweets(req, res, next) {
   const username = req.query.username;
-  const data = username
+  const data = await (username
     ? tweetRepository.getAllByUsername(username)
-    : tweetRepository.getAll();
+    : tweetRepository.getAll());
   res.status(200).json(data);
   // if (username) {
   //   return db
@@ -17,9 +17,9 @@ export function getTweets(req, res, next) {
   // }
 }
 
-export function getTweet(req, res, next) {
+export async function getTweet(req, res, next) {
   const id = req.params.id;
-  const tweet = tweetRepository.getAllById(id);
+  const tweet = await tweetRepository.getAllById(id);
   if (tweet) {
     res.status(200).json(tweet);
   } else {
@@ -30,9 +30,9 @@ export function getTweet(req, res, next) {
   //   .then((result) => res.status(200).json(result[0][0]));
 }
 
-export function createTweet(req, res, next) {
+export async function createTweet(req, res, next) {
   const { text, name, username } = req.body;
-  const tweet = tweetRepository.create(text, name, username);
+  const tweet = await tweetRepository.create(text, name, username);
   res.status(201).json(tweet);
   // return db
   //   .execute("INSERT INTO tweets (text, createdAt, userId) VALUES(?,?,?)", [
@@ -43,10 +43,10 @@ export function createTweet(req, res, next) {
   //   .then((result) => res.status(201).json(result));
 }
 
-export function updateTweet(req, res, next) {
+export async function updateTweet(req, res, next) {
   const id = req.params.id;
   const text = req.body.text;
-  const tweet = tweetRepository.update(id, text);
+  const tweet = await tweetRepository.update(id, text);
   if (tweet) {
     res.status(200).json(tweet);
   } else {
@@ -57,9 +57,9 @@ export function updateTweet(req, res, next) {
   //   .then((result) => res.status(200).json(result));
 }
 
-export function deleteTweet(req, res, next) {
+export async function deleteTweet(req, res, next) {
   const id = req.params.id;
-  tweetRepository.remove(id);
+  await tweetRepository.remove(id);
   res.sendStatus(204);
   // return db
   //   .execute("DELETE FROM tweets WHERE id=?", [id])
